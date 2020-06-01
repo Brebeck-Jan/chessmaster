@@ -1,4 +1,4 @@
-# chessmaster
-## this is going to be interesting
-### i made a commit
-#### I'm cool
+# Chessmaster
+## by Andreas Bernrieder, Thorsten Hilbradt, Niklas Wichter, Jan Brebeck
+
+### work in progress
