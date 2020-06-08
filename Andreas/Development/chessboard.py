@@ -40,7 +40,7 @@ class Board(object):
 
         self.init_layer_board()
     
-    def get_random_legal_move(self):
+    def get_legal_move(self, all = False):
         """
         Return random legal move.
         """
@@ -48,10 +48,15 @@ class Board(object):
         # get all legal moves
         legal_moves = [move for move in self.board.generate_legal_moves()]
 
+        if all:
+
+            # return all possible legal moves
+            return legal_moves
+
         # get random move
         ran_move = np.random.choice(legal_moves)
 
-        # return
+        # return random move
         return ran_move
 
     def init_layer_board(self):
@@ -210,7 +215,7 @@ class Board(object):
 
             return queen_value
         
-        else
+        else:
 
             # No valid option selected
             return 0
