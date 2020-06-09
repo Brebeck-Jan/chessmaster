@@ -39,9 +39,7 @@ class Node(object):
         """
 
         # update own value
-        print("value old", self.value)
         self.value += value
-        print("value new", self.value)
 
         # node was visited
         self.visited += 1
@@ -106,12 +104,12 @@ class Node(object):
 
             # 2. Step: Expansion
             child.expand()
-            print("children", child.children)
 
             # 3. Step: Rollout of one node
             a = list(child.children.keys())[0]
             child.children[a].rollout(depth=120)
 
+            print("selected child", child)
             return child
     
     def expand(self):
@@ -124,7 +122,7 @@ class Node(object):
         moves = self.board.get_legal_move(all = True)
 
         for move in moves:
-            print("move", move)
+
             child = Node(parent = self, board = copy.deepcopy(self.board), move = move)
             child.board.move(child.move)
             self.children[move] = child

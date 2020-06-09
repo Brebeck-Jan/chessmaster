@@ -12,15 +12,10 @@ def mcts(iterations):
     for i in range(iterations):
 
         print("iter: ", i)
-        # select leaf
 
+        # select leaf
         leaf = root.select()
 
-        # expand leaf
-        leaf.expand()
-
-        # rollout leaf
-        leaf.rollout(depth=120)
         print(50*"-")
         # [print(c.value) for c in root.children.values()]
     
