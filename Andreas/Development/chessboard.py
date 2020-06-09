@@ -30,13 +30,12 @@ mapper["K"] = 5
 
 class Board(object):
 
-    def __init__(self, opposing_agent):
+    def __init__(self):
         """
         Setup Chess Environment
         """
 
         self.board = chess.Board()
-        self.opposing_agent = opposing_agent
 
         self.init_layer_board()
     
@@ -180,6 +179,27 @@ class Board(object):
         # return
         return end, reward
     
+    def handle_user_move(self, user_input):
+        """
+        Transform user input in python-chess move.
+        """
+
+        # transform to python-chess move
+        move = chess.Move.from_uci(user_input)
+
+        # check if move is legal
+        moves = self.get_legal_move(all=True)
+        
+        if move in moves:
+
+            # move is legal
+            return move
+        
+        else:
+
+            # move is illegal
+            raise ValueError("move is illegal")
+
     def get_material_value(self, option = "all"):
         """
         Get the material values.
@@ -227,9 +247,3 @@ class Board(object):
 
         self.board = chess.Board()
         self.init_layer_board()
-    
-    def copy(self):
-        """
-        Returns a copy of the board
-        """
-        return self

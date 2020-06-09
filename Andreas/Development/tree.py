@@ -48,7 +48,7 @@ class Node(object):
         if self.parent:
             self.parent.update(value)
     
-    def select(self):
+    def select(self, printable=False):
         """
         Recursivley choose node with highest value.
         Use Upper-Confidence-Bound Algorithm to reduce Exploration / Exploitation Trade off.
@@ -85,31 +85,29 @@ class Node(object):
         
         # select highest value
         child = max(child_ucb, key = child_ucb.get)
-        print("max child", child)
+        print("max child", child) if printable else 0
 
         # rerun search if node has childs
         if child.children:
             
-            child.select()
+            child.select(printable = printable)
         
         # no child so return node
         else:
 
             # integration of full functional MCTS
 
-            # execute move on child to get new board
-            print("move:", child.move)
-            print("board\n", child.board.board)
-            #child.board.move(child.move)
+            # prints
+            print("node move:", child.move) if printable else None
+            print("board:\n", child.board.board) if printable else None
 
             # 2. Step: Expansion
             child.expand()
 
             # 3. Step: Rollout of one node
             a = list(child.children.keys())[0]
-            child.children[a].rollout(depth=120)
+            child.children[a].rollout(depth=120, printable = printable)
 
-            print("selected child", child)
             return child
     
     def expand(self):
@@ -127,7 +125,7 @@ class Node(object):
             child.board.move(child.move)
             self.children[move] = child
 
-    def rollout(self, depth = None):
+    def rollout(self, depth = None, printable = False):
         """
         Simulate one complete Playout for node and get value!
         Set up depth means limit maximum depth of simulation
@@ -159,5 +157,6 @@ class Node(object):
         self.update(value)
 
         # reset to old board
+        print("after rollout:\n", self.board.board) if printable else None
         self.board = copy.deepcopy(_prev_board)
         _prev_board = None
