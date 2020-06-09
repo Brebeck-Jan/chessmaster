@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 # setup Node Structure for MCTS
 
@@ -38,7 +39,9 @@ class Node(object):
         """
 
         # update own value
+        print("value old", self.value)
         self.value += value
+        print("value new", self.value)
 
         # node was visited
         self.visited += 1
@@ -83,9 +86,8 @@ class Node(object):
             child_ucb[child] = UCB1(child)
         
         # select highest value
-        print("UCB_list", child_ucb)
         child = max(child_ucb, key = child_ucb.get)
-        print("child:", child)
+        print("max child", child)
 
         # rerun search if node has childs
         if child.children:
@@ -96,16 +98,21 @@ class Node(object):
         else:
 
             # integration of full functional MCTS
-            print("returned child", child)
+
+            # execute move on child to get new board
+            print("move:", child.move)
+            print("board\n", child.board.board)
+            #child.board.move(child.move)
 
             # 2. Step: Expansion
             child.expand()
+            print("children", child.children)
 
             # 3. Step: Rollout of one node
             a = list(child.children.keys())[0]
             child.children[a].rollout(depth=120)
 
-            #return child
+            return child
     
     def expand(self):
         """
@@ -117,8 +124,9 @@ class Node(object):
         moves = self.board.get_legal_move(all = True)
 
         for move in moves:
-
-            child = Node(parent = self, board = self.board, move = move)
+            print("move", move)
+            child = Node(parent = self, board = copy.deepcopy(self.board), move = move)
+            child.board.move(child.move)
             self.children[move] = child
 
     def rollout(self, depth = None):
@@ -128,6 +136,10 @@ class Node(object):
         """
         
         # simulate with random moves for both players
+
+        # save old board
+        _prev_board = copy.deepcopy(self.board)
+
         value = 0
         if depth:
 
@@ -147,5 +159,7 @@ class Node(object):
                 value += reward
         
         self.update(value)
-            
 
+        # reset to old board
+        self.board = copy.deepcopy(_prev_board)
+        _prev_board = None

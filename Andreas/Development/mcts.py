@@ -16,12 +16,12 @@ def mcts(iterations):
 
         leaf = root.select()
 
-        # # expand leaf
-        # leaf.expand()
+        # expand leaf
+        leaf.expand()
 
-        # # rollout leaf
-        # leaf.rollout(depth=120)
-
+        # rollout leaf
+        leaf.rollout(depth=120)
+        print(50*"-")
         # [print(c.value) for c in root.children.values()]
     
     # return childs (moves) with values
@@ -30,4 +30,6 @@ def mcts(iterations):
 
         result[root.children[child].move] = root.children[child].value
     
-    return result
+    print(result)
+    print("maxmove", max(result, key = result.get))
+    # return result

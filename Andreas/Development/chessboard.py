@@ -227,3 +227,9 @@ class Board(object):
 
         self.board = chess.Board()
         self.init_layer_board()
+    
+    def copy(self):
+        """
+        Returns a copy of the board
+        """
+        return self
