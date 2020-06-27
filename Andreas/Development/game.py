@@ -1,11 +1,12 @@
 from chessboard import Board
 from tree import Node
+import numpy as np
 import re
 import gc
 
 class Chess(object):
 
-    def __init__(self, playercolour = "Black", agent):
+    def __init__(self, agent, playercolour = "Black"):
 
         self.board = Board()
         self.playercolour = playercolour
@@ -68,7 +69,37 @@ class Chess(object):
             print("Actual Board in Turn: ", number)
             print(self.board.board)
     
-    def train(self):
+    def play_against_chessmaster(self):
+        """
+        Let user play against the model!
+        """
+
+        # Implementaion missing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+        pass
+    
+    def start_learning(self, iters = 40, update_rate = 5, max_moves = 60):
+        """
+        Start learning of chess agent.
+        """
+
+        for i in range(iters):
+
+            # reset board
+            self.board.reset_board()
+            print("Iter: ", i)
+
+            # create  regulary new fixed model
+            if i % update_rate == 0:
+
+                self.chess_agent.fix_model()
+
+                # print iteration
+                # print("Iteration", i)
+            
+            # train
+            self.train(maxmoves = max_moves)
+    
+    def train(self, maxmoves):
         """ 
         Method to train the Chess agent.
         """
@@ -80,17 +111,20 @@ class Chess(object):
 
         while not end:
 
+            # print board
+            # print(self.board.board) # Problem: myoptic spieler spielgt sehr schlecht, code überprüfen!!!!
+
             # get state and predicted state value
             state = np.expand_dims(self.board.layer_board.copy(), axis = 0)
             state_value = self.chess_agent.predict(state)
             
             # agent plays as White player
             if self.board.board.turn:
-                move = self.mcts_step()
+                move = self.mcts_step(depth = 60) # check which depth is nice!
             
             # use myopic agent as Black player
             else:
-                move = myopic_agent_step()
+                move = self.myopic_agent_step()
 
             # make move
             end, reward = self.board.move(move)
@@ -100,7 +134,7 @@ class Chess(object):
             suc_state_value = self.chess_agent.predict(sucstate)
 
             # calculate error
-            error = reward + self.gamme * suc_state_value - state_value
+            error = reward + self.gamma * suc_state_value - state_value
             error = np.float(np.squeeze(error))
 
             # add 1 to turncount
@@ -129,6 +163,11 @@ class Chess(object):
             if turncount % 10 == 0:
 
                 self.update_agent()
+            
+            # stop game after defined amount of moves
+            if turncount > maxmoves:
+
+                end = True
 
     def player_step(self):
         """
@@ -171,7 +210,7 @@ class Chess(object):
         self.root.children[a].rollout(depth=depth)
 
         # get move from Monte Carlo Tree Search
-        move = self.mcts(100)
+        move = self.mcts(50)
 
         # return move
         return move
@@ -245,7 +284,7 @@ class Chess(object):
         choice_indices, states, rewards, sucstates, episode_active = self.get_minibatch()
 
         # calculate TD error
-        td_errors = self.agent.TD_update(states, rewards, sucstates, episode_active, gamma = self.gamma)
+        td_errors = self.chess_agent.TD_update(states, rewards, sucstates, episode_active, gamma = self.gamma)
 
         # update mem error
         self.mem_error[choice_indices.tolist()] = td_errors

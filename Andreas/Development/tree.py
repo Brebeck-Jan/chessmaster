@@ -106,7 +106,7 @@ class Node(object):
 
             # 3. Step: Rollout of one node
             a = list(child.children.keys())[0]
-            child.children[a].rollout(depth=120, printable = printable)
+            child.children[a].rollout(depth=60, printable = printable) # make depth more abstract and check hich depth is nice!
 
             return child
     

@@ -16,6 +16,9 @@ class Agent(object):
 
         # build model
         self.init_model()
+
+        # set fix model
+        self.fix_model()
     
     def fix_model(self):
         """ Creates Model used for bootstrapping. """
@@ -103,3 +106,18 @@ class Agent(object):
         td_errors = V_target - np.squeeze(V_state)
 
         return td_errors
+    
+    def save_model(self):
+        """
+        Save model to file
+        """
+
+        self.model.save("chessmaster.h5")
+    
+    def load_model(self):
+        """
+        Load model from file.
+        File has to be in same directory.
+        """
+
+        self.model = load_model("chessmaster.h5")
