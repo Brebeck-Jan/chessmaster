@@ -84,7 +84,7 @@ class Agent(object):
         self.model.compile(optimizer = self.optimizer, loss = mean_squared_error)
 
     def predict(self, layer_board):
-        """ Predict state vlaue of layer_board. """
+        """ Predict state value of layer_board. """
 
         return self.model.predict(layer_board)
     

@@ -74,6 +74,45 @@ class Chess(object):
         Let user play against the model!
         """
 
+        # setup player who starts
+        turn = "Player" if self.playercolour == "White" else "AI"
+        print("Starting turn: ", turn)
+
+        end = False
+        number = 0
+
+        # print initial field
+        print("Welcome to your chess game:\n", self.board.board)
+
+        while not end:
+
+            number += 1
+
+            # AIs Turn
+            if turn == "AI":
+                
+                # get AI move
+                move = self.chessmaster_step()
+                print("AI move", move)
+
+                # pass move to Player
+                turn = "Player"
+            
+            elif turn == "Player":
+                
+                # get player move
+                move = self.player_step()
+
+                # pass move to AI
+                turn = "AI"
+
+            # execute move and check if game ended with move
+            end, reward = self.board.move(move)
+
+            print(50*"-")
+            print("Actual Board in Turn: ", number)
+            print(self.board.board)
+
         # Implementaion missing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
         pass
     
@@ -97,7 +136,15 @@ class Chess(object):
                 # print("Iteration", i)
             
             # train
-            self.train(maxmoves = max_moves)
+            try:
+                
+                self.train(maxmoves = max_moves)
+            
+            except:
+
+                # best error handling!!!
+                print("error at iteration;", i)
+                continue
     
     def train(self, maxmoves):
         """ 
@@ -210,7 +257,7 @@ class Chess(object):
         self.root.children[a].rollout(depth=depth)
 
         # get move from Monte Carlo Tree Search
-        move = self.mcts(50)
+        move = self.mcts(128)
 
         # return move
         return move
@@ -244,6 +291,44 @@ class Chess(object):
 
         # return move
         return max_move
+    
+    def chessmaster_step(self):
+        """
+        Get step from trained model
+        """
+
+        # load model
+        self.chess_agent.load_model()
+
+        # setup root
+        self.root = Node(board = self.board)
+
+        # expand
+        self.root.expand()
+
+        # set state values via RL model
+        for child in self.root.children:
+            
+            # board of child
+            board = np.expand_dims(self.root.children[child].board.layer_board.copy(), axis = 0)
+            
+            # predict state value
+            value = self.chess_agent.predict(board)
+
+            # set predictet value
+            self.root.children[child].set_value(value)
+        
+        # get max move
+        result = {}
+        for child in self.root.children:
+
+            result[self.root.children[child].move] = self.root.children[child].value
+        
+        # get max move
+        move = max(result, key = result.get)
+
+        # return move
+        return move
     
     def reset(self):
         """
@@ -326,4 +411,5 @@ class Chess(object):
 
         Was fehlt: der anfang von der learn. py also die iterationen und dann das updatedn des fiixed models
         dann noch dass der mcts nicht komplett resettet wird jedesmal, sondern, dass die gewählte child node neue parent jnode wird und die werte erhalten bleiben!
+        --> in diesem baum nicht umsetzbar --> gegnerzug muss beachtet werden!!!!
         """

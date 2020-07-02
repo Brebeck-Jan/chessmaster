@@ -33,6 +33,12 @@ class Node(object):
         # assigned move
         self.move = move
     
+    def set_value(self, value):
+        """
+        Set value of node. Used by agent
+        """
+        self.value = value
+    
     def update(self, value):
         """
         Update recursivley value of Node and parent node
