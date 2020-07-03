@@ -1,13 +1,18 @@
-Start MCTS (Pre-Alpha :D)
+# How to train and play
 
-mcts file must be deleted later!
+from agent import Agent
+from game import Chess
 
-import mcts
-mcts.mcts(30) # iterations
+agent = Agent()
+chess = Chess(agent = agent)
 
-Start a chess game
-import game
+iterations = 20
 
-game = game.Chess() # if you want to be white use game.Chess(playercolour="White")
+# train model
+chess.start_learning(iters = iterations)
 
-game.play()
+# save model
+chess.agent.save_model()
+
+# play against model
+chess.play_against_chessmaster()
