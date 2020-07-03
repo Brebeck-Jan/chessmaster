@@ -54,7 +54,7 @@ class Node(object):
         if self.parent:
             self.parent.update(value)
     
-    def select(self, printable=False):
+    def select(self, printable=False, agent = None):
         """
         Recursivley choose node with highest value.
         Use Upper-Confidence-Bound Algorithm to reduce Exploration / Exploitation Trade off.
@@ -96,9 +96,9 @@ class Node(object):
         # rerun search if node has childs
         if child.children:
             
-            child.select(printable = printable)
+            child.select(printable = printable, agent = agent)
         
-        # no child so return node
+        # no children so return node
         else:
 
             # integration of full functional MCTS
@@ -108,7 +108,7 @@ class Node(object):
             print("board:\n", child.board.board) if printable else None
 
             # 2. Step: Expansion
-            child.expand()
+            child.expand(agent = agent) # try to fit in game.py !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             # 3. Step: Rollout of one node
             a = list(child.children.keys())[0]
@@ -116,7 +116,7 @@ class Node(object):
 
             return child
     
-    def expand(self):
+    def expand(self, agent = None):
         """
         Expand nodes.
         Add one child node for every possible action from this point.
@@ -129,6 +129,13 @@ class Node(object):
 
             child = Node(parent = self, board = copy.deepcopy(self.board), move = move)
             child.board.move(child.move)
+
+            # tmp set initial value from model
+            state = np.expand_dims(child.board.layer_board.copy(), axis = 0)
+            value = agent.predict(state)
+            child.set_value(value)
+
+            # add to children list
             self.children[move] = child
 
     def rollout(self, depth = None, printable = False):

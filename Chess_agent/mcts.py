@@ -28,3 +28,5 @@ def mcts(iterations, printable = False):
     print(result)
     print("maxmove", max(result, key = result.get))
     # return result
+
+    # Implement method, that chosen action (child node of parent node becomes new parent node and all it schildren are kept => more efficent than compute everything over again!

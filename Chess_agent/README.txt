@@ -1,2 +1,18 @@
-Hier ist die Version unseres Agenten, ohne dass ich was daran gemacht habe,
-kopiert das einfach in ein eigenes Verzeichnis, dann bekommen wir unterschiedliche Lösungen ^
+# How to train and play
+
+from agent import Agent
+from game import Chess
+
+agent = Agent()
+chess = Chess(agent = agent)
+
+iterations = 20
+
+# train model
+chess.start_learning(iters = iterations)
+
+# save model
+chess.agent.save_model()
+
+# play against model
+chess.play_against_chessmaster()

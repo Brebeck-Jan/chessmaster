@@ -33,6 +33,12 @@ class Node(object):
         # assigned move
         self.move = move
     
+    def set_value(self, value):
+        """
+        Set value of node. Used by agent
+        """
+        self.value = value
+    
     def update(self, value):
         """
         Update recursivley value of Node and parent node
@@ -106,7 +112,7 @@ class Node(object):
 
             # 3. Step: Rollout of one node
             a = list(child.children.keys())[0]
-            child.children[a].rollout(depth=120, printable = printable)
+            child.children[a].rollout(depth=60, printable = printable) # make depth more abstract and check hich depth is nice!
 
             return child
     
