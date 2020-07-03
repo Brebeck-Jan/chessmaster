@@ -3,7 +3,7 @@ import copy
 
 # setup Node Structure for MCTS
 
-class Node(object):
+class Node(object): 
 
     def __init__(self, parent = None, board = None, move = None):
         """
@@ -110,9 +110,12 @@ class Node(object):
             # 2. Step: Expansion
             child.expand(agent = agent) # try to fit in game.py !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-            # 3. Step: Rollout of one node
-            a = list(child.children.keys())[0]
-            child.children[a].rollout(depth=60, printable = printable) # make depth more abstract and check hich depth is nice!
+            # 3. Step: Rollout of one node 
+            # ##PROBLEM: SoTi child.children is empty after expand --> WHy????
+            if child.children:
+
+                a = list(child.children.keys())[0]
+                child.children[a].rollout(depth=60, printable = printable) # make depth more abstract and check hich depth is nice!
 
             return child
     
@@ -130,10 +133,12 @@ class Node(object):
             child = Node(parent = self, board = copy.deepcopy(self.board), move = move)
             child.board.move(child.move)
 
-            # tmp set initial value from model
-            state = np.expand_dims(child.board.layer_board.copy(), axis = 0)
-            value = agent.predict(state)
-            child.set_value(value)
+            # tmp set initial value from model (if given)
+            if agent:
+
+                state = np.expand_dims(child.board.layer_board.copy(), axis = 0)
+                value = agent.predict(state)
+                child.set_value(value)
 
             # add to children list
             self.children[move] = child
@@ -152,18 +157,28 @@ class Node(object):
         value = 0
         if depth:
 
-            end = False
-            while not end:
+            for i in range(depth):
 
                 move = self.board.get_legal_move()
+
+                # checkmate
+                if move == None:
+                    break
+
                 end, reward = self.board.move(move)
                 value += reward
         
         else:
 
-            for i in range(depth):
+            end = False
+            while not end:
 
                 move = self.board.get_legal_move()
+
+                # checkmate
+                if move == None:
+                    break
+
                 end, reward = self.board.move(move)
                 value += reward
         
