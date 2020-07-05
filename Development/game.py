@@ -115,12 +115,9 @@ class Chess(object):
 
             print(50*"-")
             print("Actual Board in Turn: ", number, "\n")
-            print("A B C D E F G H")
-            print(self.board.board)
+            # print("A B C D E F G H")
+            # print(self.board.board)
             self.board.show_board()
-
-        # Implementaion missing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
-        pass
 
     def start_learning(self, iters = 40, update_rate = 5, max_moves = 60):
         """
@@ -137,6 +134,10 @@ class Chess(object):
             if i % update_rate == 0:
 
                 self.chess_agent.fix_model()
+
+                # save
+                self.chess_agent.save_model()
+                print("Saving")
 
                 # print iteration
                 # print("Iteration", i)
@@ -273,8 +274,6 @@ class Chess(object):
         """
         Computer Agent who plays myopic.
         """
-
-        # AGENTB IS VERY BAD HOW TO IMPROVE?????
 
         move_dict = {}
 

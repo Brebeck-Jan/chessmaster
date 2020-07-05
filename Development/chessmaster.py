@@ -83,3 +83,4 @@ class Chessmaster():
 
         # show
         plt.show()
+        
