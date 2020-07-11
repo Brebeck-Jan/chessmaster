@@ -3,6 +3,7 @@ from tree import Node
 import numpy as np
 import re
 import gc
+import random
 
 class Chess(object):
 
@@ -18,6 +19,10 @@ class Chess(object):
         self.gamma = 0.9 # E [0,1]
         self.memsize = 2000
         self.batch_size = 256
+
+        # set up arrays for estimation
+        self.reward_trace = []
+        self.balance_trace = []
 
         # set up arrays for neural network learning
         self.mem_state = np.zeros(shape = (1, 8, 8, 8))
@@ -82,7 +87,7 @@ class Chess(object):
         number = 0
 
         # print initial field
-        print("Welcome to your chess game:\n", self.board.board)
+        print("Welcome to your chess game:\n")
 
         while not end:
 
@@ -93,7 +98,6 @@ class Chess(object):
                 
                 # get AI move
                 move = self.chessmaster_step()
-                print("AI move", move)
 
                 # pass move to Player
                 turn = "Player"
@@ -110,12 +114,11 @@ class Chess(object):
             end, reward = self.board.move(move)
 
             print(50*"-")
-            print("Actual Board in Turn: ", number)
-            print(self.board.board)
+            print("Actual Board in Turn: ", number, "\n")
+            # print("A B C D E F G H")
+            # print(self.board.board)
+            self.board.show_board()
 
-        # Implementaion missing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
-        pass
-    
     def start_learning(self, iters = 40, update_rate = 5, max_moves = 60):
         """
         Start learning of chess agent.
@@ -124,7 +127,7 @@ class Chess(object):
         for i in range(iters):
 
             # reset board
-            self.board.reset_board()
+            self.reset()
             print("Iter: ", i)
 
             # create  regulary new fixed model
@@ -132,19 +135,15 @@ class Chess(object):
 
                 self.chess_agent.fix_model()
 
+                # save
+                self.chess_agent.save_model()
+                print("Saving")
+
                 # print iteration
                 # print("Iteration", i)
             
             # train
-            try:
-                
-                self.train(maxmoves = max_moves)
-            
-            except:
-
-                # best error handling!!!
-                print("error at iteration;", i)
-                continue
+            self.train(maxmoves = max_moves)
     
     def train(self, maxmoves):
         """ 
@@ -159,7 +158,7 @@ class Chess(object):
         while not end:
 
             # print board
-            # print(self.board.board) # Problem: myoptic spieler spielgt sehr schlecht, code überprüfen!!!!
+            # print(self.board.board)
 
             # get state and predicted state value
             state = np.expand_dims(self.board.layer_board.copy(), axis = 0)
@@ -172,7 +171,7 @@ class Chess(object):
             # use myopic agent as Black player
             else:
                 move = self.myopic_agent_step()
-
+ 
             # make move
             end, reward = self.board.move(move)
 
@@ -190,6 +189,13 @@ class Chess(object):
             # save if episode is active
             episode_active = 0 if end else 1
 
+            # get balance
+            balance = self.board.get_material_value()
+
+            # save reward and balance trace
+            self.reward_trace = np.append(self.reward_trace, reward)
+            self.balance_trace.append(balance)
+
             # construct training sample
             self.mem_state = np.append(self.mem_state, state, axis = 0)
             self.mem_reward = np.append(self.mem_reward, reward)
@@ -206,7 +212,7 @@ class Chess(object):
                 self.mem_error = self.mem_error[1:]
                 self.mem_episode_active = self.mem_episode_active[1:]
             
-            # update agent every 10 steps
+            # update agent every 10 steps 
             if turncount % 10 == 0:
 
                 self.update_agent()
@@ -215,6 +221,8 @@ class Chess(object):
             if turncount > maxmoves:
 
                 end = True
+            
+            # print(50*"-")
 
     def player_step(self):
         """
@@ -250,14 +258,14 @@ class Chess(object):
         self.root = Node(board = self.board)
 
         # initial expand
-        self.root.expand()
+        self.root.expand(agent = self.chess_agent) # AGENT needs to be set where else
 
         # initial rollout
         a = list(self.root.children.keys())[0]
         self.root.children[a].rollout(depth=depth)
 
         # get move from Monte Carlo Tree Search
-        move = self.mcts(128)
+        move = self.mcts(128, depth = depth)
 
         # return move
         return move
@@ -277,14 +285,28 @@ class Chess(object):
             # run move
             self.board.board.push(move)
 
+            # update layer board
+            self.board.update_layer_board()
+
             # get new material value
             material_new = self.board.get_material_value()
 
             # undo move
             self.board.board.pop()
 
+            # reset to old layer board
+            self.board.get_prev_layer_board()
+
             # save move with value
-            move_dict[move] = material_new - material_old
+            # move_dict[move] = material_new - material_old # would be right if myopic is playing white
+            move_dict[move] = material_old - material_new # for playing black
+        
+        # shuffle dict
+        tmp_l = list(move_dict.items())
+        random.shuffle(tmp_l)
+
+        # save shuffled dict
+        move_dict = dict(tmp_l)
         
         # get max move
         max_move = max(move_dict, key = move_dict.get)
@@ -338,15 +360,24 @@ class Chess(object):
         # delete chessboard
         self.board.reset_board()
     
-    def mcts(self, iterations, printable = False):
+    def mcts(self, iterations, printable = False, depth = 120):
         """
         Monte Carlo Tree Search
         """
 
         for i in range(iterations):
-
+            
             # loop through MCTS
-            leaf = self.root.select(printable = printable)
+            leaf = self.root.select(printable = printable, agent = self.chess_agent) # agent is tmp, until lower ccode works!
+
+            # # expand leaf
+            # leaf.expand()
+
+            # # missing function to use agent to set initial value of children!!!
+
+            # # rollout one child
+            # a = list(leaf.children.keys())[0]
+            # leaf.children[a].rollout(depth = depth, printable = printable) 
         
         # return childs (moves) with values
         result = {}
@@ -401,15 +432,3 @@ class Chess(object):
 
         # return
         return choice_indices, states, rewards, sucstates, episode_active
-
-        """
-        Funktionsweise:
-        neuronales netz lernt die state vlaues vorherzusagen, 
-        damit kann der mcts um einiges schneller errechnet werden!!!!! 
-        einfach nach der expansion die zugehörigen state values von dem neuronalen 
-        netz geben lassen!!
-
-        Was fehlt: der anfang von der learn. py also die iterationen und dann das updatedn des fiixed models
-        dann noch dass der mcts nicht komplett resettet wird jedesmal, sondern, dass die gewählte child node neue parent jnode wird und die werte erhalten bleiben!
-        --> in diesem baum nicht umsetzbar --> gegnerzug muss beachtet werden!!!!
-        """

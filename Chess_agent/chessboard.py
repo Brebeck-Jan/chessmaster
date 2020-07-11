@@ -1,5 +1,8 @@
 import chess
+import chess.svg
 import numpy as np
+
+from IPython.display import SVG, display
 
 # set up mapper for chessman for specific layer
 mapper = {}
@@ -53,7 +56,14 @@ class Board(object):
             return legal_moves
 
         # get random move
-        ran_move = np.random.choice(legal_moves)
+        if legal_moves:
+
+            ran_move = np.random.choice(legal_moves)
+
+        else:
+
+            # Check Mate!
+            ran_move = None
 
         # return random move
         return ran_move
@@ -158,13 +168,13 @@ class Board(object):
         elif result == "1-0":
 
             # white (AI only plays white) wins
-            reward = 1
+            reward = 100 # check whcih number is the best (original is 1, -1)
             end = True
         
         elif result == "0-1":
 
             # Black (opponent) wins
-            reward = -1
+            reward = -100 # siehe oben
             end = True
         
         elif result == "1/2-1/2":
@@ -247,3 +257,10 @@ class Board(object):
 
         self.board = chess.Board()
         self.init_layer_board()
+    
+    def show_board(self):
+        """
+        Show svg version of board
+        """
+
+        display(SVG(chess.svg.board(board = self.board)))

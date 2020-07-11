@@ -86,7 +86,7 @@ class Agent(object):
     def predict(self, layer_board):
         """ Predict state value of layer_board. """
 
-        return self.model.predict(layer_board)
+        return float(self.model.predict(layer_board))
     
     def TD_update(self, states, rewards, sucstates, episode_active, gamma = 0.9):
         """

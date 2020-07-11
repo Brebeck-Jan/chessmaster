@@ -1,4 +1,0 @@
-python-chess
-git+https://github.com/arjangroen/RLC.git
-keras
-tensorflow
