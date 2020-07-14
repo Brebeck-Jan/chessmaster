@@ -39,14 +39,14 @@ class Chessmaster():
 
     def save_model(self):
         """
-        Save model to file
+        Save model to file.
         """
 
         self.agent.save_model()
     
     def load_model(self):
         """
-        Load model from file
+        Load model from file.
         """
 
         # load old model if exists
@@ -57,7 +57,6 @@ class Chessmaster():
 
         except:
 
-            # No model exists
             print("No model found")
             pass
         
@@ -69,8 +68,6 @@ class Chessmaster():
 
         reward = pd.DataFrame(self.chess.reward_trace)
         reward.rolling(window = 500, min_periods = 0).mean().plot(figsize = (16, 9), title = "Average Reward")
-
-        # show
         plt.show()
 
     def plot_balance_trace(self):
@@ -80,7 +77,5 @@ class Chessmaster():
 
         reward = pd.DataFrame(self.chess.balance_trace)
         reward.rolling(window = 500, min_periods = 0).mean().plot(figsize = (16, 9), title = "Average Balance")
-
-        # show
         plt.show()
         
