@@ -126,16 +126,15 @@ class Chess(object):
 
             # reset board
             self.reset()
-            print("Iter: ", i)
 
             # create  regulary new fixed model
             if i % update_rate == 0:
 
+                print("Iteration: ", i)
                 self.chess_agent.fix_model()
 
                 # save
                 self.chess_agent.save_model()
-                print("Saving")
 
             # train
             self.train(maxmoves = max_moves)
@@ -184,8 +183,7 @@ class Chess(object):
             # get balance
             balance = self.board.get_material_value()
 
-            # save reward and balance trace
-            self.reward_trace = np.append(self.reward_trace, reward)
+            # save balance trace
             self.balance_trace.append(balance)
 
             # construct training sample
@@ -213,6 +211,9 @@ class Chess(object):
             if turncount > maxmoves:
 
                 end = True
+                
+        # save reward trace
+        self.reward_trace = np.append(self.reward_trace, reward)
             
     def player_step(self):
         """

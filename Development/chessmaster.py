@@ -11,7 +11,7 @@ class Chessmaster():
 
         self.chess = Chess(self.agent)
     
-    def train_agent(self, iterations, maxmoves = 60, update_rate = 5):
+    def train_agent(self, iterations, maxmoves = 80, update_rate = 5):
         """
         Call train function in game.py
         """
