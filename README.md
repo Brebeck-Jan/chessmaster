@@ -24,27 +24,36 @@ Run code:
     
     chessmaster = Chessmaster()
     
-    // function to train chessmaster\br
+    // function to train chessmaster
+    
     chessmaster.train_agent(iterations = 100)
     
-    // function to play against chesssmaster\br
+    // function to play against chesssmaster
+    
     chessmaster.play()
     
     // alternative
+    
     from game import Chess
+    
     from agent import Agent
     
     // define rl agent
+    
     agent = Agent()
     
     // define chess
+    
     chess = Chess(agent)
     
     // start training
+    
     chess.start_learning(iters = 100)
     
     // play against pure MCST
+    
     chess.play_against_mcts
     
     // play against trained model
+    
     chess.play_against_chessmaster()
