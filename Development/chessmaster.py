@@ -66,7 +66,7 @@ class Chessmaster():
         Plot reward trace of model
         """
 
-        reward = pd.DataFrame(self.chess.reward_trace)
+        reward = pd.DataFrame(self.chess.reward_trace[1:]) # exclude first game (distort graph)
         reward.rolling(window = 500, min_periods = 0).mean().plot(figsize = (16, 9), title = "Average Reward")
         plt.show()
 
@@ -75,7 +75,7 @@ class Chessmaster():
         Plot Balance trace of model
         """
 
-        reward = pd.DataFrame(self.chess.balance_trace)
+        reward = pd.DataFrame(self.chess.balance_trace[80:]) # exclude first game (distort graph)
         reward.rolling(window = 500, min_periods = 0).mean().plot(figsize = (16, 9), title = "Average Balance")
         plt.show()
         
