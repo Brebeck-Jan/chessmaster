@@ -1,6 +1,6 @@
 # Chessmaster
 by  
-- Thorsten Hilbradt,
+- Thorsten Hilbradt 5034067,
 - Andreas Bernrieder 7876007,
 - Niklas Wichter, 
 - Jan Brebeck
