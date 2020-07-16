@@ -1,9 +1,9 @@
 # Chessmaster
 by  
-Thorsten Hilbradt,
-Andreas Bernrieder 7876007,
-Niklas Wichter, 
-Jan Brebeck
+- Thorsten Hilbradt,
+- Andreas Bernrieder 7876007,
+- Niklas Wichter, 
+- Jan Brebeck
 
 ### How to use
 Navigate into /Chess_agent
