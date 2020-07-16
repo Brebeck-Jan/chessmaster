@@ -24,10 +24,10 @@ Run code:
     
     chessmaster = Chessmaster()
     
-    // function to train chessmaster
+    // function to train chessmaster\br
     chessmaster.train_agent(iterations = 100)
     
-    // function to play against chesssmaster
+    // function to play against chesssmaster\br
     chessmaster.play()
     
     // alternative
