@@ -1,7 +1,6 @@
 import chess
 import chess.svg
 import numpy as np
-
 from IPython.display import SVG, display
 
 # set up mapper for chessman for specific layer
@@ -44,7 +43,7 @@ class Board(object):
     
     def get_legal_move(self, all = False):
         """
-        Return random legal move.
+        Return single random or all legal moves. 
         """
 
         # get all legal moves
@@ -106,7 +105,7 @@ class Board(object):
             self.layer_board[layer, row, col] = colour
             self.layer_board[6, :, :] = 1 / self.board.fullmove_number
         
-        # mark Layer 6, row 0 with colour | UNDERSTAND
+        # mark Layer 6, row 0 with colour
         if self.board.turn:
 
             self.layer_board[6, 0, :] = 1
@@ -114,7 +113,7 @@ class Board(object):
             
             self.layer_board[6, 0, :] = -1
 
-        # update layer 7 | UNDERSTAND
+        # update layer 7
         self.layer_board[7, :, :] = 1 
     
     def update_layer_board(self):
@@ -168,19 +167,19 @@ class Board(object):
         elif result == "1-0":
 
             # white (AI only plays white) wins
-            reward = 100 # check whcih number is the best (original is 1, -1)
+            reward = 100
             end = True
         
         elif result == "0-1":
 
             # Black (opponent) wins
-            reward = -100 # siehe oben
+            reward = -100
             end = True
         
         elif result == "1/2-1/2":
 
             # Draw
-            reward = 0 # OPTION: set to -0.5 to train programm to win!?
+            reward = 0
             end = True
 
         # add reward and balance reward
@@ -264,3 +263,6 @@ class Board(object):
         """
 
         display(SVG(chess.svg.board(board = self.board)))
+
+board = Board()
+board.show_board()

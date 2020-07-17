@@ -9,7 +9,7 @@ class Agent(object):
     def __init__(self):
 
         # set up model optimizer
-        self.optimizer = RMSprop(learning_rate = 0.01) # Choose optimal learning rate!
+        self.optimizer = RMSprop(learning_rate = 0.01) 
         
         # set up model
         self.model = Model()
@@ -21,7 +21,9 @@ class Agent(object):
         self.fix_model()
     
     def fix_model(self):
-        """ Creates Model used for bootstrapping. """
+        """
+        Creates Model used for bootstrapping.
+        """
 
         # clone model
         self.fixed_model = clone_model(self.model)
@@ -33,17 +35,19 @@ class Agent(object):
         self.fixed_model.set_weights(self.model.get_weights())
 
     def init_model(self):
-        """ Build neural network. """
+        """
+        Build neural network. 
+        """
 
         # input is state (of chessboard, in layer form)
         layer_state = Input(shape=(8,8,8), name = "state")
 
-        # set up parameters for Conv2D layers | Find explanation!
+        # set up parameters for Conv2D layers
         filters = 4
         kernel_size = 1
         activation = "relu"
 
-        # Conc2D Layers | Find explanation for exact implementation!
+        # Conc2D Layers
         conv_01 = Conv2D(filters, (kernel_size, kernel_size), activation = activation)(layer_state)
         conv_02 = Conv2D(2*filters, (2*kernel_size, 2*kernel_size), strides = (1, 1), activation = activation)(layer_state)
         conv_03 = Conv2D(3*filters, (3*kernel_size, 3*kernel_size), strides = (2, 2), activation = activation)(layer_state)
@@ -84,7 +88,9 @@ class Agent(object):
         self.model.compile(optimizer = self.optimizer, loss = mean_squared_error)
 
     def predict(self, layer_board):
-        """ Predict state value of layer_board. """
+        """
+        Predict state value of layer_board.
+        """
 
         return float(self.model.predict(layer_board))
     
@@ -93,7 +99,7 @@ class Agent(object):
         Update SARSA Network with minibatch samples
         """
 
-        suc_state_values = self.fixed_model.predict(sucstates) # Implement fix model in learn.py!!!!! update after x itertaions!
+        suc_state_values = self.fixed_model.predict(sucstates)
         V_target = np.array(rewards) + np.array(episode_active) * gamma * np.squeeze(suc_state_values)
 
         # Train with gradient descent step of minibatch
@@ -102,7 +108,7 @@ class Agent(object):
         # get expected returns
         V_state = self.model.predict(states)
 
-        # get td error
+        # get TD error
         td_errors = V_target - np.squeeze(V_state)
 
         return td_errors
