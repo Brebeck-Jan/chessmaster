@@ -115,8 +115,6 @@ class Chess(object):
 
             print(50*"-")
             print("Actual Board in Turn: ", number, "\n")
-            # print("A B C D E F G H")
-            # print(self.board.board)
             self.board.show_board()
 
     def start_learning(self, iters = 40, update_rate = 5, max_moves = 60):
@@ -128,20 +126,16 @@ class Chess(object):
 
             # reset board
             self.reset()
-            print("Iter: ", i)
 
             # create  regulary new fixed model
             if i % update_rate == 0:
 
+                print("Iteration: ", i)
                 self.chess_agent.fix_model()
 
                 # save
                 self.chess_agent.save_model()
-                print("Saving")
 
-                # print iteration
-                # print("Iteration", i)
-            
             # train
             self.train(maxmoves = max_moves)
     
@@ -157,16 +151,13 @@ class Chess(object):
 
         while not end:
 
-            # print board
-            # print(self.board.board)
-
             # get state and predicted state value
             state = np.expand_dims(self.board.layer_board.copy(), axis = 0)
             state_value = self.chess_agent.predict(state)
             
             # agent plays as White player
             if self.board.board.turn:
-                move = self.mcts_step(depth = 60) # check which depth is nice!
+                move = self.mcts_step(depth = 60)
             
             # use myopic agent as Black player
             else:
@@ -192,8 +183,7 @@ class Chess(object):
             # get balance
             balance = self.board.get_material_value()
 
-            # save reward and balance trace
-            self.reward_trace = np.append(self.reward_trace, reward)
+            # save balance trace
             self.balance_trace.append(balance)
 
             # construct training sample
@@ -221,9 +211,10 @@ class Chess(object):
             if turncount > maxmoves:
 
                 end = True
+                
+        # save reward trace
+        self.reward_trace = np.append(self.reward_trace, reward)
             
-            # print(50*"-")
-
     def player_step(self):
         """
         Let player make move.
@@ -368,17 +359,8 @@ class Chess(object):
         for i in range(iterations):
             
             # loop through MCTS
-            leaf = self.root.select(printable = printable, agent = self.chess_agent) # agent is tmp, until lower ccode works!
-
-            # # expand leaf
-            # leaf.expand()
-
-            # # missing function to use agent to set initial value of children!!!
-
-            # # rollout one child
-            # a = list(leaf.children.keys())[0]
-            # leaf.children[a].rollout(depth = depth, printable = printable) 
-        
+            leaf = self.root.select(printable = printable, agent = self.chess_agent) 
+            
         # return childs (moves) with values
         result = {}
         for child in self.root.children:

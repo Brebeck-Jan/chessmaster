@@ -2,8 +2,8 @@
 by  
 - Thorsten Hilbradt 5034067,
 - Andreas Bernrieder 7876007,
-- Niklas Wichter, 
-- Jan Brebeck
+- Niklas Wichter 7428266, 
+- Jan Brebeck 8016697
 
 ### How to use
 Navigate into /Chess_agent

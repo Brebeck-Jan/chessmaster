@@ -35,13 +35,13 @@ class Node(object):
     
     def set_value(self, value):
         """
-        Set value of node. Used by agent
+        Set value of node. Used by agent.
         """
         self.value = value
     
     def update(self, value):
         """
-        Update recursivley value of Node and parent node
+        Update recursivley value of Node and parent node.
         """
 
         # update own value
@@ -63,7 +63,6 @@ class Node(object):
         def UCB1(self, c = 2):
             """
             UCB1-Algorithm
-            TASK: Check how to choose optimal c
             """
 
             # calculate UCB
@@ -103,20 +102,17 @@ class Node(object):
 
             # integration of full functional MCTS
 
-            # prints
             print("node move:", child.move) if printable else None
             print("board:\n", child.board.board) if printable else None
 
             # 2. Step: Expansion
-            child.expand(agent = agent) # try to fit in game.py !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            child.expand(agent = agent)
 
             # 3. Step: Rollout of one node 
-            # ##PROBLEM: SoTi child.children is empty after expand --> WHy????
             if child.children:
 
                 a = list(child.children.keys())[0]
-                child.children[a].rollout(depth=60, printable = printable) # make depth more abstract and check hich depth is nice!
-
+                child.children[a].rollout(depth=60, printable = printable) 
             return child
     
     def expand(self, agent = None):
@@ -133,7 +129,7 @@ class Node(object):
             child = Node(parent = self, board = copy.deepcopy(self.board), move = move)
             child.board.move(child.move)
 
-            # tmp set initial value from model (if given)
+            # tmp set initial value from model
             if agent:
 
                 state = np.expand_dims(child.board.layer_board.copy(), axis = 0)
@@ -146,7 +142,7 @@ class Node(object):
     def rollout(self, depth = None, printable = False):
         """
         Simulate one complete Playout for node and get value!
-        Set up depth means limit maximum depth of simulation
+        Set up depth means limit maximum depth of simulation.
         """
         
         # simulate with random moves for both players
