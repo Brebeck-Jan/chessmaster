@@ -1,4 +1,16 @@
-# How to train and play
+# How to use chessmaster.py (easy) | In Jupyter Notebook!
+
+from chessmaster import Chessmaster
+
+# set instance
+chessmaster = Chessmasetr()
+
+# play
+chessmaster.play()
+
+----------------------------------------------
+
+# How to use game.py
 
 from agent import Agent
 from game import Chess
